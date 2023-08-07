@@ -16,7 +16,7 @@ impl Editor {
                 Ok(key) => match key {
                     Key::Char(c) => {
                         if c.is_control() {
-                            println!("{:?} \r", c as u8)
+                            println!("{:?} \r", c as u8);
                         } else {
                             println!("{:?} ({})\r", c as u8, c);
                         }
@@ -26,7 +26,7 @@ impl Editor {
                         break;
                     }
 
-                    _ => println!("{:?}\r", key),
+                    _ => println!("{key:?}\r"),
                 },
                 Err(err) => die(err),
             }
@@ -39,5 +39,5 @@ impl Editor {
 }
 
 fn die(e: std::io::Error) {
-    panic!("{}", e);
+    panic!("{e}");
 }
