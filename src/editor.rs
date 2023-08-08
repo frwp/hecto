@@ -60,7 +60,10 @@ impl Editor {
         for row in 0..height {
             Terminal::clear_current_line();
             if row == height / 2 {
-                println!("Hecto ediitor -- version {}\r", VERSION);
+                let welcome_message = format!("Hecto editor -- version {}", VERSION);
+                let width =
+                    std::cmp::min(self.terminal.size().width as usize, welcome_message.len());
+                println!("{}\r", &welcome_message[..width]);
             }
             println!("~\r");
         }
