@@ -1,6 +1,6 @@
-use crate::Row;
-use crate::{Document, Terminal};
+use crate::{Document, Row, Terminal};
 use core::panic;
+use std::env;
 
 use termion::event::Key;
 
@@ -35,10 +35,17 @@ impl Editor {
     }
 
     pub fn default() -> Self {
-        Editor {
+        let args: Vec<String> = env::args().collect();
+        let document = if args.len() > 1 {
+            let file_name = &args[1];
+            Document::open(&file_name).unwrap_or_default()
+        } else {
+            Document::default()
+        };
+        Self {
             should_quit: false,
             terminal: Terminal::default().expect("Failed to initialize terminal"),
-            document: Document::default(),
+            document,
             cursor_position: Position::default(),
         }
     }
