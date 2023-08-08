@@ -15,6 +15,7 @@ pub struct Editor {
     terminal: Terminal,
     cursor_position: Position,
     document: Document,
+    offset: Position,
 }
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -47,6 +48,7 @@ impl Editor {
             terminal: Terminal::default().expect("Failed to initialize terminal"),
             document,
             cursor_position: Position::default(),
+            offset: Position::default(),
         }
     }
 
