@@ -8,6 +8,8 @@ pub struct Editor {
     terminal: Terminal,
 }
 
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 impl Editor {
     pub fn run(&mut self) {
         loop {
@@ -54,8 +56,12 @@ impl Editor {
     }
 
     fn draw_rows(&self) {
-        for _ in 0..self.terminal.size().height {
+        let height = self.terminal.size().height;
+        for row in 0..height {
             Terminal::clear_current_line();
+            if row == height / 2 {
+                println!("Hecto ediitor -- version {}\r", VERSION);
+            }
             println!("~\r");
         }
     }
