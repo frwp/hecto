@@ -1,5 +1,5 @@
 use core::panic;
-use std::io::{stdin, stdout};
+use std::io::{stdin, stdout, Write};
 
 use termion::event::Key;
 use termion::input::TermRead;
@@ -14,6 +14,9 @@ impl Editor {
         let _stdout = stdout().into_raw_mode().unwrap();
 
         loop {
+            if let Err(error) = self.refresh_screen() {
+                die(error);
+            }
             if let Err(error) = self.process_keypress() {
                 die(error);
             }
@@ -34,6 +37,11 @@ impl Editor {
             _ => (),
         }
         Ok(())
+    }
+
+    fn refresh_screen(&self) -> Result<(), std::io::Error> {
+        print!("{}", termion::clear::All);
+        std::io::stdout().flush()
     }
 }
 
