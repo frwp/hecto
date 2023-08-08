@@ -1,3 +1,4 @@
+use crate::Terminal;
 use core::panic;
 use std::io::{stdin, stdout, Write};
 
@@ -7,6 +8,7 @@ use termion::raw::IntoRawMode;
 
 pub struct Editor {
     should_quit: bool,
+    terminal: Terminal,
 }
 
 impl Editor {
@@ -27,7 +29,10 @@ impl Editor {
     }
 
     pub fn default() -> Self {
-        Editor { should_quit: false }
+        Editor {
+            should_quit: false,
+            terminal: Terminal::default().expect("Failed to initialize terminal"),
+        }
     }
 
     fn process_keypress(&mut self) -> Result<(), std::io::Error> {
@@ -51,7 +56,7 @@ impl Editor {
     }
 
     fn draw_rows(&self) {
-        for _ in 0..24 {
+        for _ in 0..self.terminal.size().height {
             println!("~\r");
         }
     }
