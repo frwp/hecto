@@ -120,7 +120,18 @@ impl Editor {
                     y = y.saturating_add(1)
                 }
             }
-            Key::Left => x = x.saturating_sub(1),
+            Key::Left => {
+                if x > 0 {
+                    x -= 1
+                } else if y > 0 {
+                    y -= 1;
+                    if let Some(row) = self.document.row(y) {
+                        x = row.len();
+                    } else {
+                        x = 0;
+                    }
+                }
+            }
             Key::Right => {
                 if x < width {
                     x = x.saturating_add(1)
@@ -134,14 +145,14 @@ impl Editor {
                 } else {
                     0
                 }
-            },
+            }
             Key::PageDown => {
                 y = if y.saturating_add(terminal_height) < height {
                     terminal_height + y as usize
                 } else {
                     height
                 }
-            },
+            }
             _ => (),
         }
         width = if let Some(row) = self.document.row(y) {
