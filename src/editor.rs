@@ -62,9 +62,9 @@ impl Editor {
         let mut initial_status = String::from("HELP: Ctrl-S = Save | Ctrl-Q = Quit");
         let document = if args.len() > 1 {
             let file_name = &args[1];
-            let doc = Document::open(&file_name);
-            if doc.is_ok() {
-                doc.unwrap()
+            let doc = Document::open(file_name);
+            if let Ok(doc) = doc {
+                doc
             } else {
                 initial_status = format!("ERR: Could not open file: {}", file_name);
                 Document::default()
@@ -111,7 +111,7 @@ impl Editor {
                     self.quit_times -= 1;
                     return Ok(());
                 }
-                self.should_quit = true
+                self.should_quit = true;
             }
             Key::Ctrl('s') => self.save(),
             Key::Char(c) => {
@@ -226,7 +226,7 @@ impl Editor {
             }
             Key::PageDown => {
                 y = if y.saturating_add(terminal_height) < height {
-                    terminal_height + y as usize
+                    terminal_height + y
                 } else {
                     height
                 }
