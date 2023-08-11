@@ -1,6 +1,7 @@
 use crate::{Document, Row, Terminal};
 use core::panic;
 use std::env;
+use std::io::Error;
 use std::time::{Duration, Instant};
 
 use termion::color;
@@ -79,11 +80,14 @@ impl Editor {
         }
     }
 
-    fn process_keypress(&mut self) -> Result<(), std::io::Error> {
+    fn process_keypress(&mut self) -> Result<(), Error> {
         let pressed_key = Terminal::read_key()?;
         match pressed_key {
             Key::Ctrl('q') => self.should_quit = true,
             Key::Ctrl('s') => {
+                if self.document.file_name.is_none() {
+                    self.document.file_name = Some(self.prompt("Save as: ")?);
+                }
                 if self.document.save().is_ok() {
                     self.status_message =
                         StatusMessage::from("File saved successfully".to_string());
@@ -116,7 +120,7 @@ impl Editor {
         Ok(())
     }
 
-    fn refresh_screen(&self) -> Result<(), std::io::Error> {
+    fn refresh_screen(&self) -> Result<(), Error> {
         Terminal::cursor_hide();
         Terminal::cursor_position(&Position::default());
         if self.should_quit {
@@ -289,9 +293,27 @@ impl Editor {
             print!("{}", text);
         }
     }
+
+    fn prompt(&mut self, prompt: &str) -> Result<String, Error> {
+        let mut result = String::new();
+        loop {
+            self.status_message = StatusMessage::from(format!("{}{}", prompt, result));
+            self.refresh_screen()?;
+            if let Key::Char(c) = Terminal::read_key()? {
+                if c == '\n' {
+                    self.status_message = StatusMessage::from(String::new());
+                    break;
+                }
+                if !c.is_control() {
+                    result.push(c);
+                }
+            }
+        }
+        Ok(result)
+    }
 }
 
-fn die(e: std::io::Error) {
+fn die(e: Error) {
     Terminal::clear_screen();
     panic!("{e}");
 }
